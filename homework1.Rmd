@@ -1,0 +1,7 @@
+---
+title: "homework1"
+author: "Sophia"
+date: "2020/7/6"
+output: html_document
+---
+这个作业太有意思了
