@@ -37,7 +37,7 @@ The vacancy rate is the fraction of housing units which are not occupied.  The d
     c. For Alameda, Santa Clara and Allegheny Counties, what were the average percentages of housing built since 2005?
     d. The `cor` function calculates the correlation coefficient between two variables.  What is the correlation between median house value and the percent of housing built since 2005 in (i) the whole data, (ii) all of California, (iii) all of Pennsylvania, (iv) Alameda County, (v) Santa Clara County and (vi) Allegheny County?
     e. Make three plots, showing median house values against median income, for Alameda, Santa Clara, and Allegheny Counties.  (If you can fit the information into one plot, clearly distinguishing the three counties, that's OK too.)
-```{r, eval=FALSE}
+```{r}
 acca <- c()
 for (tract in 1:nrow(ca_pa)) {
   if (ca_pa$STATEFP[tract] == 6) {

@@ -1,8 +1,11 @@
 ---
 title: "Homework 5: Pareto and Kuznets on the Grand Tour"
+author: "蒋晓雅 3170104877"
 output: pdf_document
 ---
-
+```{r setup, message = F, include=FALSE}
+library(tidyverse)
+```
 We continue working with the World Top Incomes Database [https://wid.world], and the Pareto distribution, as in the lab.  We also continue to practice working with data frames, manipulating data from one format to another, and writing functions to automate repetitive tasks.
 
 We saw in the lab that if the upper tail of the income distribution followed a perfect Pareto distribution, then
@@ -27,10 +30,42 @@ Because of measurement error and sampling noise, we can't find find one value of
 \left(\left(\frac{P99}{P99.9}\right)^{-a+1} - 10\right)^2 + \left(\left(\frac{P99.5}{P99.9}\right)^{-a+1} - 5\right)^2 +  \left(\left(\frac{P99}{P99.5}\right)^{-a+1} - 2\right)^2
 \]
 Write a function, `percentile_ratio_discrepancies`, which takes as inputs `P99`, `P99.5`, `P99.9` and `a`, and returns the value of the expression above.  Check that when `P99=1e6`, `P99.5=2e6`, `P99.9=1e7` and `a=2`, your function returns `0`.
+ Given the arguments $P99 = 1e6, P99.5 = 2e6, P99.9 = 1e7,a = 2$, the return value is zero.
+```{r}
+wt <- read_csv('data/wtid-report.csv') %>% dplyr::select(Year, `P99 income threshold`:`P99.9 income threshold`) %>% transmute(Year = Year, P99 = `P99 income threshold`, P99.5 = `P99.5 income threshold`, P99.9 = `P99.9 income threshold`) 
 
+percentile_ratio_discrepancies <- function(P99,P99.5,P99.9,a){
+  return(((P99 / P99.9)^(-a + 1) - 10)^2 + ((P99.5 / P99.9)^(-a + 1) - 5)^2 + ((P99 / P99.5)^(-a + 1) - 2)^2)
+}
+percentile_ratio_discrepancies(P99 = 1e+06 ,P99.5 = 2e+06,P99.9 = 1e+07,a = 2)
+```
 2. Write a function, `exponent.multi_ratios_est`, which takes as inputs `P99`, `P99.5`, `P99.9`, and estimates `a`.  It should minimize your `percentile_ratio_discrepancies` function.  The starting value for the minimization should come from \eqref{eqn:exponent-from-quantile-ratio}.  Check that when `P99=1e6`, `P99.5=2e6` and `P99.9=1e7`, your function returns an `a` of 2.
-
+```{r}
+exponent.multi_ratios_est <- function(P_99,P_99.5,P_99.9){
+  tem_fun <- function(a, P99 = P_99,P99.5 = P_99.5,P99.9 = P_99.9){
+  return(((P99 / P99.9)^(-a + 1) - 10)^2 + ((P99.5 / P99.9)^(-a + 1) - 5)^2 + ((P99 / P99.5)^(-a + 1) - 2)^2)
+}
+  tem <- nlm(tem_fun,1-(log(10)/log(P_99/P_99.9)))$estimate[[1]]
+  return(tem)
+}
+exponent.multi_ratios_est(P_99 = 1e+06 ,P_99.5 = 2e+06,P_99.9 = 1e+07)
+```
 3. Write a function which uses  `exponent.multi_ratios_est` to estimate $a$ for the US for every year from 1913 to 2012.  (There are many ways you could do thi, including loops.)  Plot the estimates; make sure the labels of the plot are appropriate.
-
+```{r}
+wt$est <- vector(mode = "numeric", length = nrow(wt))
+for(i in 1:nrow(wt)){
+  wt$est[i] = exponent.multi_ratios_est(P_99 = wt$P99[i], P_99.5 = wt$P99.5[i],P_99.9 = wt$P99.9[i])
+}
+ggplot(wt) + geom_line(aes(x = wt$Year, y = wt$est),size = 1.5) +
+  labs(x = "year", y = "estimated value")
+```
 4. Use \eqref{eqn:exponent-from-quantile-ratio} to estimate $a$ for the US for every year.  Make a scatter-plot of these estimates against those from problem 3.  If they are identical or completely independent, something is wrong with at least one part of your code.  Otherwise, can you say anything about how the two estimates compare?
-
+```{r}
+wt$newest <- vector(mode = "numeric", length = nrow(wt))
+for(i in 1:nrow(wt)){
+  wt$newest[i] = 1 - (log(10) / log(wt$P99[i] / wt$P99.9[i]))
+}
+ggplot(data = wt) + geom_line(aes(x = wt$Year, y = wt$est)) +
+  geom_point(aes(x = wt$Year, y = wt$newest),size = 1.5,col="blue") +
+  labs(x = "year", y = "estimated value")
+```
