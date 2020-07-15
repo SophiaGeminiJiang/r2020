@@ -1,0 +1,49 @@
+---
+title: "Homework 1"
+output:
+  html_document:
+    df_print: paged
+  pdf_document:
+    latex_engine: xelatex
+---
+```{r setup, message = F, include=FALSE}
+options(htmltools.dir.verssion = FALSE)
+suppressWarnings(expr)
+library(tidyverse)
+library(DAAG)
+library(installr)
+install.Rtools()
+```
+
+1. The Iowa data set iowa.csv is a toy example that summarises the yield of wheat (bushels per acre) for the state of Iowa between 1930-1962. In addition to yield, year, rainfall and temperature were recorded as the main predictors of yield.
+    a. First, we need to load the data set into R using the command `read.csv()`. Use the help function to learn what arguments this function takes. Once you have the necessary input, load the data set into R and make it a data frame called `iowa.df`.
+    b. How many rows and columns does `iowa.df` have? 
+    c. What are the names of the columns of `iowa.df`?
+    d. What is the value of row 5, column 7 of `iowa.df`?
+    e. Display the second row of `iowa.df` in its entirety.
+```{r message=FALSE, warning=FALSE}
+iowa.df<-read.csv("data/iowa.csv",header=T,sep=";")  
+nrow(iowa.df)  
+ncol(iowa.df)  
+rownames(iowa.df)  
+colnames(iowa.df)  
+iowa.df[5,7]  
+iowa.df[2,]  
+```
+
+2. Syntax and class-typing.
+    a. For each of the following commands, either explain why they should be errors, or explain the non-erroneous result.
+
+```
+vector1 <- c("5", "12", "7", "32")  
+max(vector1)  
+sort(vector1)  
+sum(vector1)  
+#d<e:igf/sum,e d8:h>e%g"5","12","7","32"f/"character"gf <e<
+```
+    b. For the next series of commands, either explain their results, or why they should produce errors.
+
+```
+vector2 <- c("5",7,12)
+#vector2[2] + vector2[3]
+#h?d8
